@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendar</title>
+</head>
+<body>
+<div class="year-month">
+    <h2 th:text="${date}"></h2>
+</div>
+<div class="calendar"></div>
+<div class="buttons">
+    <a th:href="@{/previous-month/{year}(year=${date})}">Previous</a>
+    <a th:href="@{/next-month/{year}(year=${date})}">Next</a>
+</div>
+
+<script th:inline="javascript">
+    let calendar = JSON.parse([[${jsonCalendar}]])
+    let calendarDiv = document.querySelector(".calendar")
+
+    function createCalendar(elem, calendar) {
+        let table = '<table><tr><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th><th>Sunday</th></tr><tr>'
+
+        let values = Object.values(calendar)
+        let keys = Object.keys(calendar)
+
+        for (let i = 0; i < keys.length; i++) {
+
+            if (values[i] == 0) {
+                if (keys[i].substr(8, 9).startsWith('0')) {
+
+
+                    table += '<td><a href="/day/' + keys[i] + '">' + keys[i].substr(9) + '</a>' + '<sup>' + '' + '</sup></td>'
+                }
+                if (!keys[i].substr(8, 9).startsWith('0')) {
+                    table += '<td><a href="/day/' + keys[i] + '">' + keys[i].substr(8, 9) + '</a>' + '<sup>' + '' + '</sup></td>'
+                }
+            }
+            if (values[i] != 0) {
+                if (keys[i].substr(8, 9).startsWith('0')) {
+                    table += '<td><a href="/day/' + keys[i] + '">' + keys[i].substr(9) + '</a>' + '<sup>' + values[i] + '</sup></td>'
+                }
+                if (!keys[i].substr(8, 9).startsWith('0')) {
+                    table += '<td><a href="/day/' + keys[i] + '">' + keys[i].substr(8, 9) + '</a>' + '<sup>' + values[i] + '</sup></td>'
+                }
+            }
+
+            if (i % 7 == 6) {
+                table += '</tr><tr>'
+            }
+        }
+
+        table += '</tr></table>'
+        elem.innerHTML = table
+    }
+
+    createCalendar(calendarDiv, calendar)
+</script>
+</body>
+</html>
