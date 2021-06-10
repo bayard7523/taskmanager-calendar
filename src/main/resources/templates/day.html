@@ -31,20 +31,20 @@
 </div>
 <div>
     <form action="#" th:action="@{/day/add/{year}(year=${date})}" th:object="${task}" method="post">
-            <label for="title">Title</label>
-            <input type="text" th:field="*{title}" id="title">
+        <label for="title">Title</label>
+        <input type="text" th:field="*{title}" id="title">
 
-            <label for="description">Description</label>
-            <input type="text" th:field="*{description}" id="description">
+        <label for="description">Description</label>
+        <input type="text" th:field="*{description}" id="description">
 
-            <select th:field="*{date}" hidden>
-                <option th:value="${date}" selected></option>
-            </select>
+        <select th:field="*{date}" hidden>
+            <option th:value="${date}" selected></option>
+        </select>
 
-            <label for="time">Time</label>
-            <input type="time" th:field="*{time}" id="time">
+        <label for="time">Time</label>
+        <input type="time" th:field="*{time}" id="time">
 
-            <button type="submit">Add</button>
+        <button type="submit">Add</button>
     </form>
 </div>
 <div>

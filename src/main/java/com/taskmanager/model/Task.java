@@ -1,12 +1,9 @@
 package com.taskmanager.model;
 
-import com.sun.istack.internal.NotNull;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Date;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 
 @Entity
 @Table(name = "tasks")
@@ -15,14 +12,12 @@ public class Task {
     private Long id;
 
     @Column(name = "title", nullable = false)
-    @NotNull
     private String title;
 
     @Column(name = "description")
     private String description;
 
-    @Column(name = "date")
-    @NotNull
+    @Column(name = "date",nullable = false)
     private String date;
 
     @Column(name = "time")
@@ -77,6 +72,30 @@ public class Task {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Task task = (Task) o;
+
+        if (!id.equals(task.id)) return false;
+        if (!title.equals(task.title)) return false;
+        if (description != null ? !description.equals(task.description) : task.description != null) return false;
+        if (!date.equals(task.date)) return false;
+        return time != null ? time.equals(task.time) : task.time == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + title.hashCode();
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + date.hashCode();
+        result = 31 * result + (time != null ? time.hashCode() : 0);
+        return result;
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.taskmanager.util;
 import com.taskmanager.service.TaskService;
 import org.springframework.stereotype.Component;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -22,67 +21,37 @@ public class MyCalendar {
     public Map<LocalDate, Integer> getCalendar(String properDate) {
         int firstDayOfWeekInCurrentMonth = -1;
         LocalDate firstDayInCurrentMonth;
-
         LocalDate firstDayInPreviousMonth;
-
         LocalDate firstDayInNextMonth;
-
         Map<LocalDate, Integer> calendar = new TreeMap<>();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
-        LocalDate current = YearMonth.parse(properDate, formatter).atDay(1);
 
+        LocalDate current = YearMonth.parse(properDate, formatter).atDay(1);
         LocalDate previous = current.minus(1, ChronoUnit.MONTHS);
         LocalDate next = current.plus(1, ChronoUnit.MONTHS);
 
         firstDayInCurrentMonth = current.with(TemporalAdjusters.firstDayOfMonth());
-
         firstDayInPreviousMonth = previous.with(TemporalAdjusters.firstDayOfMonth());
-
         firstDayInNextMonth = next.with(TemporalAdjusters.firstDayOfMonth());
 
         List<LocalDate> previousMonth = new ArrayList<>(firstDayInPreviousMonth.lengthOfMonth());
-        for (int i = 1; i <= firstDayInPreviousMonth.lengthOfMonth(); i++) {
-            previousMonth.add(LocalDate.of(previous.getYear(), previous.getMonth().getValue(), i));
-        }
+        fillMonth(previousMonth, previous, firstDayInPreviousMonth);
 
         firstDayOfWeekInCurrentMonth += firstDayInCurrentMonth.getDayOfWeek().getValue();
         previousMonth.subList(0, previous.lengthOfMonth() - firstDayOfWeekInCurrentMonth).clear();//daysBeforeFirstDayInCurrentMonth
 
         List<LocalDate> currentMonth = new ArrayList<>(firstDayInCurrentMonth.lengthOfMonth());
-        for (int i = 1; i <= firstDayInCurrentMonth.lengthOfMonth(); i++) {
-            currentMonth.add(LocalDate.of(current.getYear(), current.getMonth().getValue(), i));
-        }
+        fillMonth(currentMonth, current, firstDayInCurrentMonth);
 
         List<LocalDate> nextMonth = new ArrayList<>(firstDayInNextMonth.lengthOfMonth());
-        for (int i = 1; i <= firstDayInNextMonth.lengthOfMonth(); i++) {
-            nextMonth.add(LocalDate.of(next.getYear(), next.getMonth().getValue(), i));
-        }
-        int count = 0;
-        for (LocalDate date : previousMonth) {
-            count = taskService.getTasksByDate(date.toString()).size();
-            if (count == 0) {
-                calendar.put(date, count);
-            }
-            calendar.put(date, count);
-        }
+        fillMonth(nextMonth, next, firstDayInNextMonth);
 
-        for (LocalDate date : currentMonth) {
-            count = taskService.getTasksByDate(date.toString()).size();
-            if (count == 0) {
-                calendar.put(date, count);
-            }
-            calendar.put(date, count);
-        }
+        addDaysToCalendar(calendar, previousMonth);
+        addDaysToCalendar(calendar, currentMonth);
+
         nextMonth.subList(42 - calendar.size(), nextMonth.size()).clear();
-
-        for (LocalDate date : nextMonth) {
-            count = taskService.getTasksByDate(date.toString()).size();
-            if (count == 0) {
-                calendar.put(date, count);
-            }
-            calendar.put(date, count);
-        }
+        addDaysToCalendar(calendar, nextMonth);
 
         return calendar;
     }
@@ -101,5 +70,19 @@ public class MyCalendar {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
         LocalDate currentDate = YearMonth.parse(date, formatter).atDay(1);
         return currentDate.minus(1, ChronoUnit.MONTHS);
+    }
+
+    private void fillMonth(List<LocalDate> monthToFill, LocalDate month, LocalDate firstDayInMonth) {
+        for (int i = 1; i <= firstDayInMonth.lengthOfMonth(); i++) {
+            monthToFill.add(LocalDate.of(month.getYear(), month.getMonth().getValue(), i));
+        }
+    }
+
+    private void addDaysToCalendar(Map<LocalDate, Integer> calendar, List<LocalDate> listToAdd) {
+        int count;
+        for (LocalDate date : listToAdd) {
+            count = taskService.getTasksByDate(date.toString()).size();
+            calendar.put(date, count);
+        }
     }
 }

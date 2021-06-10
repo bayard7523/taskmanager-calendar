@@ -2,6 +2,7 @@ package com.taskmanager.service;
 
 import com.taskmanager.model.Task;
 import com.taskmanager.repository.ITaskRepository;
+import javassist.tools.reflect.CannotCreateException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,7 +17,10 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public void createTask(Task task) {
+    public void createTask(Task task) throws CannotCreateException {
+        if (task.getTitle().isEmpty()) {
+            throw new CannotCreateException("Cannot create task with: Title = " + task.getTitle());
+        }
         task.setId(null == iTaskRepository.findMaxId() ? 1 : iTaskRepository.findMaxId() + 1);
         iTaskRepository.save(task);
     }

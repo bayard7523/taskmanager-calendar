@@ -28,8 +28,6 @@
 
             if (values[i] == 0) {
                 if (keys[i].substr(8, 9).startsWith('0')) {
-
-
                     table += '<td><a href="/day/' + keys[i] + '">' + keys[i].substr(9) + '</a>' + '<sup>' + '' + '</sup></td>'
                 }
                 if (!keys[i].substr(8, 9).startsWith('0')) {
@@ -44,12 +42,10 @@
                     table += '<td><a href="/day/' + keys[i] + '">' + keys[i].substr(8, 9) + '</a>' + '<sup>' + values[i] + '</sup></td>'
                 }
             }
-
             if (i % 7 == 6) {
                 table += '</tr><tr>'
             }
         }
-
         table += '</tr></table>'
         elem.innerHTML = table
     }
